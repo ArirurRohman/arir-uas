@@ -29,10 +29,14 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
     }
 
     // Save to DataStore
+    final double cost = double.tryParse(_costController.text) ?? 0;
+    final formatter = NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
+    
     final newLog = ServiceLog(
       title: _nameController.text,
       subtitle: '${DateFormat('MMM dd, yyyy').format(_selectedDate!).toUpperCase()} • MAINTENANCE',
-      price: 'Rp ${_costController.text}',
+      price: formatter.format(cost),
+      costValue: cost,
       icon: Icons.build,
       date: _selectedDate!,
     );
