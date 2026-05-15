@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'vehicle_details_screen.dart';
+import 'add_service_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +96,7 @@ class HomeScreen extends StatelessWidget {
               },
               child: const ActiveCarCard(),
             ),
-
+            
             const SizedBox(height: 30),
 
             // Recent Services Header
@@ -154,7 +162,12 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddServiceScreen()),
+          );
+        },
         backgroundColor: Colors.red,
         child: const Icon(Icons.add, color: Colors.white, size: 30),
       ),
@@ -163,7 +176,18 @@ class HomeScreen extends StatelessWidget {
           canvasColor: const Color(0xFF141414),
         ),
         child: BottomNavigationBar(
-          currentIndex: 0,
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 1) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddServiceScreen()),
+              );
+            }
+          },
           type: BottomNavigationBarType.fixed,
           selectedItemColor: Colors.red,
           unselectedItemColor: Colors.grey,
