@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'vehicle_details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -78,7 +79,15 @@ class HomeScreen extends StatelessWidget {
             ),
 
             // Car Card
-            const ActiveCarCard(),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const VehicleDetailsScreen()),
+                );
+              },
+              child: const ActiveCarCard(),
+            ),
 
             const SizedBox(height: 30),
 
