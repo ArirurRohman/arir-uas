@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'vehicle_details_screen.dart';
 import 'add_service_screen.dart';
 import 'placeholder_screens.dart';
+import 'data_store.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -218,61 +219,46 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 10),
 
-            // Service List
-            ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(20),
-              children: [
-                ServiceTile(
-                  title: 'Shell Helix Oil Change',
-                  subtitle: 'OCT 24, 2023 • MAINTENANCE',
-                  price: '\$185.00',
-                  icon: Icons.oil_barrel,
-                  color: Colors.red,
-                  onTap: () => _showServiceDetail(context, 'Oil Change'),
-                ),
-                ServiceTile(
-                  title: 'Brake Pad Replacement',
-                  subtitle: 'SEP 12, 2023 • REPAIR',
-                  price: '\$420.50',
-                  icon: Icons.album_outlined,
-                  color: Colors.red,
-                  showIndicator: true,
-                  onTap: () => _showServiceDetail(context, 'Brake Pads'),
-                ),
-                ServiceTile(
-                  title: 'Wheel Alignment',
-                  subtitle: 'AUG 05, 2023 • MAINTENANCE',
-                  price: '\$120.00',
-                  icon: Icons.settings_input_component,
-                  color: Colors.red,
-                  onTap: () => _showServiceDetail(context, 'Alignment'),
-                ),
-                ServiceTile(
-                  title: 'ECU Diagnostics',
-                  subtitle: 'JUL 18, 2023 • INSPECTION',
-                  price: '\$85.00',
-                  icon: Icons.analytics,
-                  color: Colors.red,
-                  onTap: () => _showServiceDetail(context, 'ECU Diagnostics'),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiceHistoryScreen()));
-                      },
-                      child: Text(
-                        'VIEW FULL HISTORY',
-                        style: GoogleFonts.inter(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
-                    ),
+            // Dynamic Service List from DataStore
+            ValueListenableBuilder<List<ServiceLog>>(
+              valueListenable: DataStore().servicesNotifier,
+              builder: (context, services, child) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  itemCount: services.length > 4 ? 4 : services.length, // Show only recent 4
+                  itemBuilder: (context, index) {
+                    final log = services[index];
+                    return ServiceTile(
+                      title: log.title,
+                      subtitle: log.subtitle,
+                      price: log.price,
+                      icon: log.icon,
+                      color: log.color,
+                      showIndicator: log.showIndicator,
+                      onTap: () => _showServiceDetail(context, log.title),
+                    );
+                  },
+                );
+              },
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(top: 0),
+              child: Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiceHistoryScreen()));
+                  },
+                  child: Text(
+                    'VIEW FULL HISTORY',
+                    style: GoogleFonts.inter(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ),
-              ],
+              ),
             ),
+            
             const SizedBox(height: 80), // Space for FAB
           ],
         ),

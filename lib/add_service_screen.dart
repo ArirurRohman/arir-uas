@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'placeholder_screens.dart';
+import 'data_store.dart';
+import 'package:intl/intl.dart';
 
 class AddServiceScreen extends StatefulWidget {
   const AddServiceScreen({super.key});
@@ -13,6 +16,75 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
   final TextEditingController _costController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   DateTime? _selectedDate;
+  int _currentIndex = 1;
+
+  void _saveLog() {
+    if (_nameController.text.isEmpty) {
+      _showError('Please enter a service name.');
+      return;
+    }
+    if (_selectedDate == null) {
+      _showError('Please select a service date.');
+      return;
+    }
+
+    // Save to DataStore
+    final newLog = ServiceLog(
+      title: _nameController.text,
+      subtitle: '${DateFormat('MMM dd, yyyy').format(_selectedDate!).toUpperCase()} • MAINTENANCE',
+      price: 'Rp ${_costController.text}',
+      icon: Icons.build,
+      date: _selectedDate!,
+    );
+    
+    DataStore().addService(newLog);
+
+    // Success Simulation
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green,
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 10),
+            Text(
+              'Service log saved successfully!',
+              style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) Navigator.pop(context);
+    });
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(message, style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
+  void _applyTemplate(String name, String cost) {
+    setState(() {
+      _nameController.text = name;
+      _costController.text = cost;
+      _selectedDate = DateTime.now();
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 1),
+        backgroundColor: Colors.blueGrey[800],
+        content: Text('Template "$name" applied.', style: GoogleFonts.inter()),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +109,15 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.grey[900],
-              child: const Icon(Icons.person, color: Colors.white, size: 20),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[900],
+                child: const Icon(Icons.person, color: Colors.white, size: 20),
+              ),
             ),
           ),
         ],
@@ -104,7 +181,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
                   const SizedBox(height: 20),
                   
                   _buildLabel('COST (IDR)'),
-                  _buildTextField(_costController, '0', prefixText: 'Rp '),
+                  _buildTextField(_costController, '0', prefixText: 'Rp ', keyboardType: TextInputType.number),
                   const SizedBox(height: 20),
                   
                   _buildLabel('SERVICE NOTES'),
@@ -116,7 +193,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: _saveLog,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -190,9 +267,9 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
               ),
             ),
             const SizedBox(height: 15),
-            _buildTemplateItem('Standard Oil Service'),
-            _buildTemplateItem('Tire Rotation'),
-            _buildTemplateItem('Brake Pad Replacement'),
+            _buildTemplateItem('Standard Oil Service', () => _applyTemplate('Standard Oil Service', '450000')),
+            _buildTemplateItem('Tire Rotation', () => _applyTemplate('Tire Rotation', '150000')),
+            _buildTemplateItem('Brake Pad Replacement', () => _applyTemplate('Brake Pad Replacement', '1200000')),
             
             const SizedBox(height: 100),
           ],
@@ -201,7 +278,20 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
       bottomNavigationBar: Theme(
         data: ThemeData(canvasColor: const Color(0xFF141414)),
         child: BottomNavigationBar(
-          currentIndex: 1, // Service tab active
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            if (index == _currentIndex) return;
+            setState(() {
+              _currentIndex = index;
+            });
+            if (index == 0) {
+              Navigator.pop(context); // Go back to Garage
+            } else if (index == 2) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const StatsScreen()));
+            } else if (index == 3) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+            }
+          },
           type: BottomNavigationBarType.fixed,
           selectedItemColor: Colors.red,
           unselectedItemColor: Colors.grey,
@@ -232,10 +322,11 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1, String? prefixText}) {
+  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1, String? prefixText, TextInputType keyboardType = TextInputType.text}) {
     return TextField(
       controller: controller,
       maxLines: maxLines,
+      keyboardType: keyboardType,
       style: GoogleFonts.inter(color: Colors.white),
       decoration: InputDecoration(
         hintText: hint,
@@ -269,6 +360,20 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
           initialDate: DateTime.now(),
           firstDate: DateTime(2000),
           lastDate: DateTime(2100),
+          builder: (context, child) {
+            return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: const ColorScheme.dark(
+                  primary: Colors.red,
+                  onPrimary: Colors.white,
+                  surface: Color(0xFF1A1A1A),
+                  onSurface: Colors.white,
+                ),
+                dialogBackgroundColor: const Color(0xFF0D0D0D),
+              ),
+              child: child!,
+            );
+          },
         );
         if (picked != null) {
           setState(() {
@@ -300,24 +405,22 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
     );
   }
 
-  Widget _buildTemplateItem(String text) {
+  Widget _buildTemplateItem(String text, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            text,
-            style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
-          ),
-          const Icon(Icons.add_circle_outline, color: Colors.white60, size: 20),
-        ],
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+        onTap: onTap,
+        title: Text(
+          text,
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+        ),
+        trailing: const Icon(Icons.add_circle_outline, color: Colors.white60, size: 20),
       ),
     );
   }
