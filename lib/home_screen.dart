@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _showFilterSheet() {
+    final lang = DataStore().languageNotifier.value;
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF1A1A1A),
@@ -31,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'FILTER SERVICES',
+                Localization.translate(lang, 'filter_services'),
                 style: GoogleFonts.orbitron(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -39,10 +40,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildFilterOption('All Services', Icons.list, true),
-              _buildFilterOption('Maintenance', Icons.build, false),
-              _buildFilterOption('Repairs', Icons.handyman, false),
-              _buildFilterOption('Inspections', Icons.analytics, false),
+              _buildFilterOption(Localization.translate(lang, 'all_services'), Icons.list, true),
+              _buildFilterOption(Localization.translate(lang, 'maintenance'), Icons.build, false),
+              _buildFilterOption(Localization.translate(lang, 'repairs'), Icons.handyman, false),
+              _buildFilterOption(Localization.translate(lang, 'inspections'), Icons.analytics, false),
               const SizedBox(height: 20),
             ],
           ),
@@ -68,243 +69,259 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: const Color(0xFF0D0D0D),
-      drawer: Drawer(
-        backgroundColor: const Color(0xFF0D0D0D),
-        child: Column(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
-              ),
-              child: Center(
-                child: Text(
-                  'GEARHEAD',
-                  style: GoogleFonts.orbitron(
-                    color: Colors.red,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+    return ValueListenableBuilder<String>(
+      valueListenable: DataStore().languageNotifier,
+      builder: (context, lang, child) {
+        return Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: const Color(0xFF0D0D0D),
+          drawer: Drawer(
+            backgroundColor: const Color(0xFF0D0D0D),
+            child: Column(
+              children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
                   ),
-                ),
-              ),
-            ),
-            _buildDrawerItem(Icons.garage, 'GARAGE', () => Navigator.pop(context)),
-            _buildDrawerItem(Icons.history, 'HISTORY', () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiceHistoryScreen()));
-            }),
-            _buildDrawerItem(Icons.analytics, 'ANALYTICS', () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const StatsScreen()));
-            }),
-            const Spacer(),
-            _buildDrawerItem(Icons.logout, 'LOGOUT', () {}),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-        ),
-        title: Text(
-          'GEARHEAD',
-          style: GoogleFonts.orbitron(
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-            fontSize: 22,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.red.withOpacity(0.5),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: const CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, color: Colors.white, size: 20),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Active Garage Header
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'ACTIVE GARAGE',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const GarageListScreen()));
-                    },
+                  child: Center(
                     child: Text(
-                      'VIEW ALL',
-                      style: GoogleFonts.inter(
+                      'GEARHEAD',
+                      style: GoogleFonts.orbitron(
                         color: Colors.red,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        fontSize: 12,
                       ),
                     ),
                   ),
-                ],
+                ),
+                _buildDrawerItem(Icons.garage, Localization.translate(lang, 'menu_garage'), () => Navigator.pop(context)),
+                _buildDrawerItem(Icons.history, Localization.translate(lang, 'menu_history'), () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiceHistoryScreen()));
+                }),
+                _buildDrawerItem(Icons.analytics, Localization.translate(lang, 'menu_analytics'), () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const StatsScreen()));
+                }),
+                const Spacer(),
+                _buildDrawerItem(Icons.logout, Localization.translate(lang, 'menu_logout'), () {}),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            ),
+            title: Text(
+              'GEARHEAD',
+              style: GoogleFonts.orbitron(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+                fontSize: 22,
               ),
             ),
-
-            // Car Card
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const VehicleDetailsScreen()),
-                );
-              },
-              child: const ActiveCarCard(),
-            ),
-            
-            const SizedBox(height: 30),
-
-            // Recent Services Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'RECENT SERVICES',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.red.withOpacity(0.5),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.tune, color: Colors.white, size: 20),
-                    onPressed: _showFilterSheet,
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            // Dynamic Service List from DataStore
-            ValueListenableBuilder<List<ServiceLog>>(
-              valueListenable: DataStore().servicesNotifier,
-              builder: (context, services, child) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  itemCount: services.length > 4 ? 4 : services.length, // Show only recent 4
-                  itemBuilder: (context, index) {
-                    final log = services[index];
-                    return ServiceTile(
-                      title: log.title,
-                      subtitle: log.subtitle,
-                      price: log.price,
-                      icon: log.icon,
-                      color: log.color,
-                      showIndicator: log.showIndicator,
-                      onTap: () => _showServiceDetail(context, log.title),
-                    );
-                  },
-                );
-              },
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(top: 0),
-              child: Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiceHistoryScreen()));
-                  },
-                  child: Text(
-                    'VIEW FULL HISTORY',
-                    style: GoogleFonts.inter(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    child: const CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.grey,
+                      child: Icon(Icons.person, color: Colors.white, size: 20),
+                    ),
                   ),
                 ),
               ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Active Garage Header
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        Localization.translate(lang, 'active_garage'),
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const GarageListScreen()));
+                        },
+                        child: Text(
+                          Localization.translate(lang, 'view_all'),
+                          style: GoogleFonts.inter(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Car Card
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const VehicleDetailsScreen()),
+                    );
+                  },
+                  child: const ActiveCarCard(),
+                ),
+                
+                const SizedBox(height: 30),
+
+                // Recent Services Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        Localization.translate(lang, 'recent_services'),
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.tune, color: Colors.white, size: 20),
+                        onPressed: _showFilterSheet,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // Dynamic Service List from DataStore
+                ValueListenableBuilder<List<ServiceLog>>(
+                  valueListenable: DataStore().servicesNotifier,
+                  builder: (context, services, child) {
+                    if (services.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+                        child: Center(
+                          child: Text(
+                            Localization.translate(lang, 'no_history'),
+                            style: GoogleFonts.inter(color: Colors.white54),
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      itemCount: services.length > 4 ? 4 : services.length, // Show only recent 4
+                      itemBuilder: (context, index) {
+                        final log = services[index];
+                        return ServiceTile(
+                          title: log.title,
+                          subtitle: log.subtitle,
+                          price: log.price,
+                          icon: log.icon,
+                          color: log.color,
+                          showIndicator: log.showIndicator,
+                          onTap: () => _showServiceDetail(context, log.title),
+                        );
+                      },
+                    );
+                  },
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 0),
+                  child: Center(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiceHistoryScreen()));
+                      },
+                      child: Text(
+                        Localization.translate(lang, 'view_full_history'),
+                        style: GoogleFonts.inter(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 80), // Space for FAB
+              ],
             ),
-            
-            const SizedBox(height: 80), // Space for FAB
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddServiceScreen()),
-          );
-        },
-        backgroundColor: Colors.red,
-        child: const Icon(Icons.add, color: Colors.white, size: 30),
-      ),
-      bottomNavigationBar: Theme(
-        data: ThemeData(
-          canvasColor: const Color(0xFF141414),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-            if (index == 1) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AddServiceScreen()));
-            } else if (index == 2) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const StatsScreen()));
-            } else if (index == 3) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
-            }
-          },
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.red,
-          unselectedItemColor: Colors.grey,
-          showUnselectedLabels: true,
-          selectedLabelStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
-          unselectedLabelStyle: GoogleFonts.inter(fontSize: 12),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.garage), label: 'Garage'),
-            BottomNavigationBarItem(icon: Icon(Icons.build), label: 'Service'),
-            BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: 'Stats'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-          ],
-        ),
-      ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddServiceScreen()),
+              );
+            },
+            backgroundColor: Colors.red,
+            child: const Icon(Icons.add, color: Colors.white, size: 30),
+          ),
+          bottomNavigationBar: Theme(
+            data: ThemeData(
+              canvasColor: const Color(0xFF141414),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+                if (index == 1) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const AddServiceScreen()));
+                } else if (index == 2) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const StatsScreen()));
+                } else if (index == 3) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+                }
+              },
+              type: BottomNavigationBarType.fixed,
+              selectedItemColor: Colors.red,
+              unselectedItemColor: Colors.grey,
+              showUnselectedLabels: true,
+              selectedLabelStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
+              unselectedLabelStyle: GoogleFonts.inter(fontSize: 12),
+              items: [
+                BottomNavigationBarItem(icon: const Icon(Icons.garage), label: Localization.translate(lang, 'garage')),
+                BottomNavigationBarItem(icon: const Icon(Icons.build), label: Localization.translate(lang, 'service')),
+                BottomNavigationBarItem(icon: const Icon(Icons.show_chart), label: Localization.translate(lang, 'stats')),
+                BottomNavigationBarItem(icon: const Icon(Icons.settings), label: Localization.translate(lang, 'settings')),
+              ],
+            ),
+          ),
+        );
+      }
     );
   }
 
@@ -320,19 +337,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showServiceDetail(BuildContext context, String service) {
+    final lang = DataStore().languageNotifier.value;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A1A),
         title: Text(service, style: GoogleFonts.orbitron(color: Colors.red)),
         content: Text(
-          'Detailed information about $service will be displayed here.',
+          Localization.translate(lang, 'detailed_info', service),
           style: GoogleFonts.inter(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('CLOSE', style: TextStyle(color: Colors.red)),
+            child: Text(Localization.translate(lang, 'close'), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -345,172 +363,177 @@ class ActiveCarCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      height: 400,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return ValueListenableBuilder<String>(
+      valueListenable: DataStore().languageNotifier,
+      builder: (context, lang, child) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          height: 400,
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A1A1A),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
+          ),
+          child: Stack(
             children: [
-              // Car Image with Badge
-              Stack(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    child: Image.asset(
-                      'assets/car_gtr.png',
-                      height: 250,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    top: 15,
-                    right: 15,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Text(
-                        'IN SERVICE',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
+                  // Car Image with Badge
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        child: Image.asset(
+                          'assets/car_gtr.png',
+                          height: 250,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ),
+                      Positioned(
+                        top: 15,
+                        right: 15,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            Localization.translate(lang, 'in_service'),
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Gradient Overlay for bottom text readability
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                const Color(0xFF1A1A1A).withOpacity(0.8),
+                                const Color(0xFF1A1A1A),
+                              ],
+                              stops: const [0.6, 0.9, 1.0],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  // Gradient Overlay for bottom text readability
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            const Color(0xFF1A1A1A).withOpacity(0.8),
-                            const Color(0xFF1A1A1A),
+                  
+                  // Car Info
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'NISSAN',
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withOpacity(0.6),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'GTR R35',
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
                           ],
-                          stops: const [0.6, 0.9, 1.0],
                         ),
-                      ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '12,500',
+                              style: GoogleFonts.orbitron(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              lang == 'Bahasa Indonesia' ? 'KILOMETER' : 'KILOMETERS',
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withOpacity(0.6),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // Oil Life Bar
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              lang == 'Bahasa Indonesia' ? 'KONDISI OLI' : 'OIL LIFE',
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withOpacity(0.6),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '82%',
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withOpacity(0.6),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: List.generate(10, (index) {
+                            return Expanded(
+                              child: Container(
+                                height: 4,
+                                margin: const EdgeInsets.symmetric(horizontal: 1),
+                                decoration: BoxDecoration(
+                                  color: index < 8 ? Colors.red : Colors.grey[800],
+                                  borderRadius: BorderRadius.circular(1),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              
-              // Car Info
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'NISSAN',
-                          style: GoogleFonts.inter(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'GTR R35',
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '12,500',
-                          style: GoogleFonts.orbitron(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'KILOMETERS',
-                          style: GoogleFonts.inter(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              
-              // Oil Life Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'OIL LIFE',
-                          style: GoogleFonts.inter(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          '82%',
-                          style: GoogleFonts.inter(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: List.generate(10, (index) {
-                        return Expanded(
-                          child: Container(
-                            height: 4,
-                            margin: const EdgeInsets.symmetric(horizontal: 1),
-                            decoration: BoxDecoration(
-                              color: index < 8 ? Colors.red : Colors.grey[800],
-                              borderRadius: BorderRadius.circular(1),
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
-        ],
-      ),
+        );
+      }
     );
   }
 }
