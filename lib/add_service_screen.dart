@@ -75,11 +75,12 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
     );
   }
 
-  void _applyTemplate(String name, String cost) {
+  void _applyTemplate(String name, String cost, String notes) {
     final lang = DataStore().languageNotifier.value;
     setState(() {
       _nameController.text = name;
       _costController.text = cost;
+      _notesController.text = notes;
       _selectedDate = DateTime.now();
     });
     
@@ -276,17 +277,35 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                _buildTemplateItem(
+                 _buildTemplateItem(
                   lang == 'Bahasa Indonesia' ? 'Servis Oli Standar' : 'Standard Oil Service', 
-                  () => _applyTemplate(lang == 'Bahasa Indonesia' ? 'Servis Oli Standar' : 'Standard Oil Service', '450000')
+                  () => _applyTemplate(
+                    lang == 'Bahasa Indonesia' ? 'Servis Oli Standar' : 'Standard Oil Service', 
+                    '450000',
+                    lang == 'Bahasa Indonesia' 
+                      ? 'Penggantian oli mesin sintetis standar, filter oli premium, pemeriksaan level cairan, dan inspeksi umum.' 
+                      : 'Standard synthetic engine oil change, premium oil filter replacement, fluid levels check, and multi-point inspection.'
+                  )
                 ),
                 _buildTemplateItem(
                   lang == 'Bahasa Indonesia' ? 'Rotasi Ban' : 'Tire Rotation', 
-                  () => _applyTemplate(lang == 'Bahasa Indonesia' ? 'Rotasi Ban' : 'Tire Rotation', '150000')
+                  () => _applyTemplate(
+                    lang == 'Bahasa Indonesia' ? 'Rotasi Ban' : 'Tire Rotation', 
+                    '150000',
+                    lang == 'Bahasa Indonesia'
+                      ? 'Rotasi silang keempat ban, inspeksi keausan tapak ban, penyesuaian tekanan angin, dan pemeriksaan balancing roda.'
+                      : 'Cross-rotation of all four tires, inspection of tire tread wear, pressure adjustment, and wheel balancing check.'
+                  )
                 ),
                 _buildTemplateItem(
                   lang == 'Bahasa Indonesia' ? 'Ganti Kampas Rem' : 'Brake Pad Replacement', 
-                  () => _applyTemplate(lang == 'Bahasa Indonesia' ? 'Ganti Kampas Rem' : 'Brake Pad Replacement', '1200000')
+                  () => _applyTemplate(
+                    lang == 'Bahasa Indonesia' ? 'Ganti Kampas Rem' : 'Brake Pad Replacement', 
+                    '1200000',
+                    lang == 'Bahasa Indonesia'
+                      ? 'Pemasangan kampas rem keramik premium, inspeksi dan pembersihan piringan cakram, pelumasan kaliper rem, dan pemeriksaan minyak rem.'
+                      : 'Installation of premium ceramic brake pads, brake rotor inspection and cleaning, brake caliper lubrication, and fluid level check.'
+                  )
                 ),
                 
                 const SizedBox(height: 100),
