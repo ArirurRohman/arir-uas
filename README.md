@@ -1,3 +1,6 @@
+## AutoLog: Garage & Service Tracker
+Aplikasi ini diciptakan untuk menyelesaikan masalah klasik para pemilik kendaraan, yaitu kelupaan dan pencatatan yang berantakan.
+
 ## 1. Spesifikasi Fungsional (Fitur Aplikasi)
 Aplikasi ini dibagi menjadi 3 modul utama yang saling terintegrasi:
 * A. Modul Manajemen Garasi (Garasi Saya)
