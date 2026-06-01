@@ -1,35 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'splash_screen.dart';
-import 'home_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'controllers/kasir_controller.dart';
+import 'screens/kasir_screen.dart';
 
-void main() {
-  runApp(const GearheadApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
+  runApp(const MyApp());
 }
 
-class GearheadApp extends StatelessWidget {
-  const GearheadApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Gearhead',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.black,
-        colorScheme: ColorScheme.dark(
-          primary: Colors.red,
-          secondary: Colors.redAccent,
-          surface: Colors.grey[900]!,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => KasirController()),
+      ],
+      child: MaterialApp(
+        title: 'Kasir Bengkel OtoPro',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E3A5F)),
+          useMaterial3: true,
+          fontFamily: 'Inter',
         ),
-        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+        home: const KasirScreen(),
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/home': (context) => const HomeScreen(),
-      },
     );
   }
 }

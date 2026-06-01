@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = service
+PRODUCT_NAME = kasir_bengkel
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.service
+PRODUCT_BUNDLE_IDENTIFIER = com.example.kasirBengkel
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.

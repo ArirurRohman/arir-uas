@@ -1,44 +1,66 @@
-## AutoLog: Garage & Service Tracker
-Aplikasi ini diciptakan untuk menyelesaikan masalah klasik para pemilik kendaraan, yaitu kelupaan dan pencatatan yang berantakan.
+# OtoPro Workshop - Sistem Kasir Bengkel
 
-## 1. Spesifikasi Fungsional (Fitur Aplikasi)
-Aplikasi ini dibagi menjadi 3 modul utama yang saling terintegrasi:
-* A. Modul Manajemen Garasi (Garasi Saya)
-    - Tambah/Edit Kendaraan: Pengguna dapat memasukkan data mobil baru (Nama, Merek, Tahun, dan Foto).
-    - Kamera & Galeri Integrasi: Pengguna bisa mengambil foto mobil langsung dari kamera HP atau memilih dari galeri untuk dijadikan profil kendaraan.
-    - Hapus Kendaraan: Menghapus kendaraan beserta seluruh riwayat servis yang terikat dengannya (Cascade Delete).
-* B. Modul Catatan Servis (Log Servis)
-1. Input Riwayat Servis: Mencatat tindakan perawatan yang meliputi:
-    - Jenis Servis (misal: Ganti Oli, Ganti Ban, Tune Up).
-    - Tanggal Pelaksanaan.
-    - Biaya Servis (dalam Rupiah).
-    - Catatan Tambahan (misal: "Menggunakan oli Shell Helix 5W-40").
-2. Riwayat Terfilter: Menampilkan daftar servis khusus untuk mobil yang sedang dipilih oleh pengguna.
-## C. Modul Dasbor Keuangan & Pengingat
-    - Kalkulator Total Biaya: Menghitung otomatis total uang yang sudah dihabiskan untuk satu kendaraan tertentu.
-    - Estimasi Servis Berikutnya: Logika sederhana yang mengingatkan pengguna untuk servis kembali 6 bulan setelah tanggal servis terakhir.
-2. Spesifikasi Teknis (Tech Stack)
-- Komponen:Framework, Database Lokal, State Management, Penyimpanan Gambar.
-- Teknologi : Flutter (Dart) v3.x, Hive, Provider, Path Provider.
-- Alasan Pemilihan: Pengembangan lintas platform (Android/iOS) dengan performa native, Database NoSQL lokal yang sangat cepat, ringan, dan tidak membutuhkan penulisan sintaks SQL yang panjang untuk operasi CRUD sederhana, Standar bawaan dari Google yang mudah dipahami untuk mengatur alur data antara UI dan Database, Menyimpan file foto yang diambil kamera ke dalam direktori lokal storage aplikasi agar aman. 
-3. Spesifikasi Antarmuka (UI/UX)
-    - Tema Desain: Modern Dark Mode. Dominasi warna hitam/abu-abu gelap (#121212) dengan aksen warna tegas seperti Neon Red atau Sporty Orange untuk memberikan kesan otomotif yang kuat.
+OtoPro Workshop KASIR adalah aplikasi Point of Sale (POS) berbasis Flutter Web yang dirancang khusus untuk memenuhi kebutuhan transaksi di bengkel otomotif. Aplikasi ini memiliki antarmuka (UI) yang modern, bersih, dan fungsional, memungkinkan kasir untuk dengan cepat memproses pesanan layanan jasa maupun suku cadang.
 
-Layout Utama:
-- Beranda: Menggunakan Aesthetic Card horizontal yang bisa  digeser (carousel) untuk memilih mobil.
+## Fitur Utama
 
-- Detail: Menggunakan teknik SliverAppBar agar foto mobil (misal: Nissan GTR atau Innova Venturer) bisa mengecil secara elegan saat layar di-scroll ke bawah.
-4. Kebutuhan Library (Dependencies)
-Kamu perlu menambahkan beberapa package berikut di file pubspec.yaml milikmu:
-dependencies:
-  flutter:
-    sdk: flutter
-  hive_flutter: ^1.1.0      # Database lokal
-  provider: ^6.1.2          # State management
-  image_picker: ^1.0.7      # Akses kamera dan galeri
-  intl: ^0.19.0             # Untuk format tanggal & mata uang Rupiah
-  google_fonts: ^6.1.0      # Font custom (misal: Montserrat)
-  5. Logika Data & Aturan Bisnis (Business Rules)
-- Relasi Data: Setiap ServiceLog wajib memiliki carId. Jika data mobil dihapus, maka data ServiceLog yang memiliki carId tersebut juga harus ikut terhapus dari database agar tidak membebani memori.
-- Validasi Form: Input biaya tidak boleh menerima huruf (harus angka/TextInputType.number) dan form nama kendaraan tidak boleh kosong.
-- Format Mata uang: Semua angka biaya yang diinput (misal: 1500000) harus otomatis ditampilkan di UI menjadi Rp 1.500.000.
+- **Antarmuka Responsif (Responsive UI)**: Aplikasi secara otomatis menyesuaikan tampilan baik ketika dibuka di layar desktop, tablet, maupun layar handphone (mobile). Layout akan menyesuaikan diri menjadi satu kolom memanjang pada layar kecil agar tetap nyaman digunakan.
+- **Manajemen Data Pelanggan**: Pencatatan mudah untuk Nomor Polisi kendaraan, Nama Pelanggan, Nomor WhatsApp, dan Merk/Tipe Mobil pada setiap transaksi.
+- **Daftar Layanan & Suku Cadang**: 
+  - Tampilan grid/list interaktif untuk menambah item ke keranjang.
+  - Dilengkapi dengan fitur **Pencarian (Search Bar)** untuk mempercepat pencarian item tertentu.
+- **Keranjang Pesanan Dinamis**: 
+  - Penambahan kuantitas (QTY) otomatis jika item yang sama ditekan beberapa kali.
+  - Opsi penghapusan item dari keranjang dengan mudah.
+- **Kalkulasi Otomatis secara Real-Time**: 
+  - Perhitungan **Subtotal**, penambahan **PPN 11%**, dan total keseluruhan (Total Akhir).
+  - Perhitungan **Uang Kembalian** otomatis saat kasir menginput nominal uang yang diterima dari pelanggan.
+- **Metode Pembayaran Tunai (Cash Only)**: Konfigurasi sistem disesuaikan secara khusus untuk merespon penerimaan pembayaran Tunai secara efisien.
+- **Struk Digital (Print Preview)**: Setelah transaksi divalidasi (uang mencukupi dan keranjang tidak kosong), sistem akan menampilkan halaman pop-up/preview Struk Pembayaran yang siap untuk dihubungkan dengan mesin printer.
+
+## Struktur Direktori
+
+Proyek ini dibangun menggunakan arsitektur MVC sederhana berbasis `Provider` untuk state management yang mudah di-maintain:
+
+```text
+kasir_bengkel/
+│
+├── assets/                     # Penyimpanan file statis (gambar, icon, dll)
+├── lib/
+│   ├── models/                 # Model data (Layanan, Pelanggan, Pesanan)
+│   ├── screens/                # UI Utama (KasirScreen, StrukScreen)
+│   ├── widgets/                # Komponen UI Reusable (ItemCard, CartRow, PaymentBox)
+│   ├── controllers/            # Logika bisnis dan State Management (KasirController)
+│   ├── utils/                  # Helper fungsi (AppFormatters, AppColors)
+│   └── main.dart               # Entry Point aplikasi Flutter
+└── pubspec.yaml                # Pengaturan dependensi & assets
+```
+
+## Teknologi yang Digunakan
+
+- **Framework**: Flutter (Dart)
+- **State Management**: Provider (`provider: ^6.1.2`)
+- **Formatting**: Intl (`intl: ^0.19.0`) - Digunakan untuk formatting Rupiah (Rp) dan Tanggal lokal.
+
+## Panduan Instalasi dan Menjalankan Aplikasi
+
+1. **Pastikan Anda memiliki Flutter SDK terinstal** di sistem Anda (mendukung Flutter Web).
+2. Clone atau ekstrak repositori proyek ini.
+3. Buka terminal/command prompt dan arahkan ke root direktori proyek (`kasir_bengkel`).
+4. Unduh semua dependensi paket dengan perintah:
+   ```bash
+   flutter pub get
+   ```
+5. Jalankan aplikasi di browser Chrome untuk lingkungan development:
+   ```bash
+   flutter run -d chrome
+   ```
+6. Aplikasi akan terbuka secara otomatis di browser Anda.
+
+## Alur Penggunaan Aplikasi (User Flow)
+
+1. **Input Data Pelanggan**: Masukkan Nopol dan data diri pelanggan (opsional namun direkomendasikan).
+2. **Pilih Layanan**: Klik tombol **`+`** pada kartu layanan/suku cadang untuk memasukkannya ke dalam Ringkasan Pesanan (Keranjang). Gunakan fitur pencarian jika perlu.
+3. **Pembayaran**: Pada panel bawah kanan, perhatikan Total Akhir, lalu masukkan nominal uang yang diberikan pelanggan ke dalam kotak input **Uang Diterima**. Uang kembalian akan otomatis muncul.
+4. **Cetak Struk**: Klik tombol hijau **Cetak Struk & Selesai**. Anda akan diarahkan ke halaman *Preview Struk*.
+5. **Selesai**: Klik Cetak & Selesai di halaman struk untuk mereset seluruh halaman kasir kembali kosong untuk pelanggan berikutnya. Jika terjadi kesalahan, Anda juga bisa langsung menekan **Batal Transaksi** di layar utama.
